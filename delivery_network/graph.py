@@ -76,6 +76,7 @@ class Graph:
             if nodes == dest:
                 return chemin
             for neighbour in self.graph[nodes]:
+                nodes_visited[src] = True
                 neighbour, power_min, dist = neighbour
                 if not nodes_visited[neighbour] and power_min <= power:
                     nodes_visited[neighbour] = True
