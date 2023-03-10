@@ -115,23 +115,33 @@ class Graph:
         """
         Should return path, min_power.
         """
-        nodes_visited = {nodes: False for nodes in self.nodes}
-       
-        def path(nodes, chemin):
-            if nodes == dest:
-                return chemin, None
-                min_power = 0
-            for neighbour in self.graph[nodes]:
-                neighbour, power, dist = neighbour
-                if not nodes_visited[neighbour]:
-                    nodes_visited[neighbour] = True
-                    result, next_min_power = path(neighbour, chemin + [neighbour])
-                    min_power = max(min_power, next_min_power, power)
-                    if result is not None:
-                        return result, min_power
-                return None, min_power
-        return path(src, [src])
-
+        list_power = []
+        for i in self.nodes:
+            for k in self.graph[i]:
+                list_power.append(k[1])
+        list_power = sorted(list(set(list_power)))
+        power = list_power[int((len(list_power)/2))]
+        medium = int((len(list_power)/2))
+        min = 0
+        max = len(list_power)
+        result = self.get_path_with_power(src, dest, list_power[min])
+        if result is not None:
+            return result, list_power[min]
+        result = self.get_path_with_power(src, dest, power)
+        while max-min > 1:
+            if result is not None:
+                max = medium
+                medium = int((medium+min)/2)
+                min = min
+                power = list_power[medium]
+                result = self.get_path_with_power(src, dest, power)
+            elif result is None:
+                min = medium
+                medium = int((medium+max)/2)
+                max = max
+                power = list_power[medium]
+                result = self.get_path_with_power(src, dest, power)
+        return self.get_path_with_power(src, dest, list_power[max]), list_power[max]
 
 def graph_from_file(filename):
     """
