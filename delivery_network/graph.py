@@ -70,7 +70,20 @@ class Graph:
     
 
     def get_path_with_power(self, src, dest, power):
-        raise NotImplementedError
+        nodes_visited = {nodes: False for nodes in self.nodes}
+
+        def path(nodes, chemin):
+            if nodes == dest:
+                return chemin
+            for neighbour in self.graph[nodes]:
+                neighbour, power_min, dist = neighbour
+                if not nodes_visited[neighbour] and power_min <= power:
+                    nodes_visited[neighbour] = True
+                    result = path(neighbour, chemin + [neighbour])
+                    if result is not None:
+                        return result
+            return None
+        return path(src, [src])
     
 
     def connected_components(self):
@@ -83,7 +96,7 @@ class Graph:
                 i = i[0]
                 if not nodes_visited[i]:
                     nodes_visited[i] = True
-                    component += dfs[i]
+                    component += dfs(i)
             return component
         for i in self.nodes:
             if not nodes_visited[i]:
@@ -100,9 +113,24 @@ class Graph:
     
     def min_power(self, src, dest):
         """
-        Should return path, min_power. 
+        Should return path, min_power.
         """
-        raise NotImplementedError
+        nodes_visited = {nodes: False for nodes in self.nodes}
+       
+        def path(nodes, chemin):
+            if nodes == dest:
+                return chemin, None
+                min_power = 0
+            for neighbour in self.graph[nodes]:
+                neighbour, power, dist = neighbour
+                if not nodes_visited[neighbour]:
+                    nodes_visited[neighbour] = True
+                    result, next_min_power = path(neighbour, chemin + [neighbour])
+                    min_power = max(min_power, next_min_power, power)
+                    if result is not None:
+                        return result, min_power
+                return None, min_power
+        return path(src, [src])
 
 
 def graph_from_file(filename):
@@ -132,7 +160,7 @@ def graph_from_file(filename):
             edge = list(map(int, file.readline().split()))
             if len(edge) == 3:
                 node1, node2, power_min = edge
-                g.add_edge(node1, node2, power_min) # will add dist=1 by default
+                g.add_edge(node1, node2, power_min)  # will add dist=1 by default
             elif len(edge) == 4:
                 node1, node2, power_min, dist = edge
                 g.add_edge(node1, node2, power_min, dist)
