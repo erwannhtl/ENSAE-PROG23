@@ -1,10 +1,13 @@
-from graph import Graph, UnionFind, graph_from_file, kruskal
+from graph import Graph, graph_from_file, kruskal, kruskal_min_power
+
 
 data_path = "input/"
-file_name = "network.01.in"
+file_name = "network.1.in"
 
 g = graph_from_file(data_path + file_name)
+
 print(g)
 
-f=kruskal(data_path + file_name)
-print(f)
+print(kruskal(g))
+
+print(kruskal_min_power(g,1,12))
